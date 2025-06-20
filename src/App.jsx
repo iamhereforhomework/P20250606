@@ -356,6 +356,17 @@ const App = () => {
     </IonPage>
   );
 
+  useEffect(() => {
+    if (playlist.length === 0) {
+      setCurrentIndex(-1);
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+    } else if (currentIndex >= playlist.length) {
+      setCurrentIndex(playlist.length - 1);
+    }
+  }, [playlist]);
+
   return (
     <IonApp>
       <IonReactRouter>

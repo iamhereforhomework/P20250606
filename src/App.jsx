@@ -54,7 +54,6 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [pendingPlaylist, setPendingPlaylist] = useState(null);
 
   const audioRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -69,26 +68,6 @@ const App = () => {
 
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
-    if (pendingPlaylist) {
-      // Match files by fileName
-      const matched = pendingPlaylist
-        .map((item) => {
-          const file = files.find((f) => f.name === item.fileName);
-          if (!file) return null;
-          return {
-            id: item.id,
-            name: item.name,
-            url: URL.createObjectURL(file),
-            file: file,
-          };
-        })
-        .filter(Boolean);
-      setPlaylist(matched);
-      setPendingPlaylist(null);
-      event.target.value = "";
-      return;
-    }
-    // Normal add
     const newPlaylistItems = files
       .filter((file) => file.type === "audio/mpeg" || file.name.endsWith(".mp3"))
       .map((file) => ({
@@ -219,9 +198,8 @@ const App = () => {
     reader.onload = function (e) {
       try {
         const loaded = JSON.parse(e.target.result);
-        setPendingPlaylist(loaded);
-        present({ message: "Playlist loaded. Please select the corresponding music files.", duration: 2000, position: "bottom" });
-        fileInputRef.current?.click();
+        present({ message: "Playlist loaded. Please select the corresponding music files again.", duration: 2000, position: "bottom" });
+        // Optionally, you can prompt the user to re-select the files and match by fileName
       } catch (error) {
         present({ message: "Invalid playlist file format.", duration: 2000, position: "bottom" });
       }
@@ -283,13 +261,11 @@ const App = () => {
                 key={item.id}
                 onClick={() => playMusic(index)}
                 button
-                lines="none"
-                className={index === currentIndex ? "playing playlist-item" : "playlist-item"}
+                lines="full"
+                className={index === currentIndex ? "playing" : ""}
               >
-                <div className="album-art-thumb">
-                  <IonIcon icon={musicalNote} />
-                </div>
-                <IonLabel className="song-info">
+                <IonIcon icon={musicalNote} slot="start" />
+                <IonLabel>
                   <h2>{item.name}</h2>
                   <p>MP3 Audio File</p>
                 </IonLabel>

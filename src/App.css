@@ -1,0 +1,97 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 16px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 16px;
+  text-align: center;
+}
+
+.empty-state ion-icon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.now-playing-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 16px;
+    text-align: center;
+}
+
+.now-playing-card .album-art ion-icon {
+  font-size: 8rem;
+}
+
+.now-playing-card h2 {
+  margin-top: 20px;
+}
+
+.progress-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px 0;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 5px;
+  background: #ddd;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 5px;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 5px;
+}
+
+.control-buttons {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-buttons .play-btn {
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 64px;
+    height: 64px;
+}
+.control-buttons .play-btn ion-icon {
+    font-size: 48px;
+}
+
+.control-buttons .control-btn ion-icon {
+    font-size: 24px;
+}
+
+
+ion-item.playing {
+    --color: var(--ion-color-primary);
+    font-weight: bold;
+} 

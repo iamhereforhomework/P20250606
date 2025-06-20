@@ -95,11 +95,6 @@ const App = () => {
   };
 
   // Playback Operations
-  const playMusic = (index) => {
-    setCurrentIndex(index);
-    setIsPlaying(true);
-  };
-
   const stopMusic = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -229,71 +224,87 @@ const App = () => {
   // Pages
   const currentTrack = playlist[currentIndex];
 
-  const PlaylistPage = () => (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Playlist</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={addMusic}>
-              <IonIcon slot="icon-only" icon={add} />
-            </IonButton>
-            <IonButton onClick={savePlaylist}>
-              <IonIcon slot="icon-only" icon={save} />
-            </IonButton>
-            <IonButton onClick={loadPlaylist}>
-              <IonIcon slot="icon-only" icon={folderOpen} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        {playlist.length === 0 ? (
-          <div className="empty-state">
-            <IonIcon icon={musicalNotesOutline} />
-            <h3>Playlist is empty</h3>
-            <p>Click the + button to add music</p>
-          </div>
-        ) : (
-          <IonList>
-            {playlist.map((item, index) => (
-              <IonItem
-                key={item.id}
-                onClick={() => playMusic(index)}
-                button
-                lines="full"
-                className={index === currentIndex ? "playing" : ""}
-              >
-                <IonIcon icon={musicalNote} slot="start" />
-                <IonLabel>
-                  <h2>{item.name}</h2>
-                  <p>MP3 Audio File</p>
-                </IonLabel>
-                <IonButton
-                  fill="clear"
-                  color="medium"
-                  slot="end"
-                  onClick={(e) => removeMusic(index, e)}
+  const PlaylistPage = ({ playlist, setCurrentIndex, setIsPlaying, currentIndex, removeMusic, savePlaylist, loadPlaylist, fileInputRef, handleFileSelect, playlistInputRef, handlePlaylistLoad }) => {
+    const playMusic = (index) => {
+      setCurrentIndex(index);
+      setIsPlaying(true);
+    };
+    return (
+      <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>Playlist</IonTitle>
+            <IonButtons slot="end">
+              <IonButton onClick={() => fileInputRef.current?.click()}>
+                <IonIcon slot="icon-only" icon={add} />
+              </IonButton>
+              <IonButton onClick={savePlaylist}>
+                <IonIcon slot="icon-only" icon={save} />
+              </IonButton>
+              <IonButton onClick={loadPlaylist}>
+                <IonIcon slot="icon-only" icon={folderOpen} />
+              </IonButton>
+            </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent fullscreen>
+          {playlist.length === 0 ? (
+            <div className="empty-state">
+              <IonIcon icon={musicalNotesOutline} />
+              <h3>Playlist is empty</h3>
+              <p>Click the + button to add music</p>
+            </div>
+          ) : (
+            <IonList>
+              {playlist.map((item, index) => (
+                <IonItem
+                  key={item.id}
+                  onClick={() => playMusic(index)}
+                  button
+                  lines="full"
+                  className={index === currentIndex ? "playing" : ""}
                 >
-                  <IonIcon icon={trash} />
-                </IonButton>
-              </IonItem>
-            ))}
-          </IonList>
-        )}
-      </IonContent>
-    </IonPage>
-  );
+                  <IonIcon icon={musicalNote} slot="start" />
+                  <IonLabel>
+                    <h2>{item.name}</h2>
+                    <p>MP3 Audio File</p>
+                  </IonLabel>
+                  <IonButton
+                    fill="clear"
+                    color="medium"
+                    slot="end"
+                    onClick={(e) => removeMusic(index, e)}
+                  >
+                    <IonIcon icon={trash} />
+                  </IonButton>
+                </IonItem>
+              ))}
+            </IonList>
+          )}
+        </IonContent>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept=".mp3"
+          multiple
+          onChange={handleFileSelect}
+        />
+        <input
+          type="file"
+          ref={playlistInputRef}
+          style={{ display: "none" }}
+          accept=".json"
+          onChange={handlePlaylistLoad}
+        />
+      </IonPage>
+    );
+  };
 
-  const PlayerPage = () => (
+  const PlayerPage = ({ currentTrack, isPlaying, currentTime, duration, formatTime, seekTo, previousTrack, togglePlayPause, nextTrack }) => (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonButton routerLink="/playlist">
-              <IonIcon slot="icon-only" icon={list} />
-            </IonButton>
-          </IonButtons>
           <IonTitle>Now Playing</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -316,9 +327,7 @@ const App = () => {
                 <div className="progress-bar" onClick={seekTo}>
                   <div
                     className="progress-fill"
-                    style={{
-                      width: `${(currentTime / duration) * 100 || 0}%`,
-                    }}
+                    style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
                   ></div>
                 </div>
                 <div className="time-info">
@@ -327,25 +336,13 @@ const App = () => {
                 </div>
               </div>
               <div className="control-buttons">
-                <IonButton
-                  className="control-btn"
-                  fill="clear"
-                  onClick={previousTrack}
-                >
+                <IonButton className="control-btn" fill="clear" onClick={previousTrack}>
                   <IonIcon slot="icon-only" icon={playSkipBack} />
                 </IonButton>
-                <IonButton
-                  className="control-btn play-btn"
-                  onClick={togglePlayPause}
-                  fill="clear"
-                >
+                <IonButton className="control-btn play-btn" onClick={togglePlayPause} fill="clear">
                   <IonIcon slot="icon-only" icon={isPlaying ? pause : play} />
                 </IonButton>
-                <IonButton
-                  className="control-btn"
-                  fill="clear"
-                  onClick={nextTrack}
-                >
+                <IonButton className="control-btn" fill="clear" onClick={nextTrack}>
                   <IonIcon slot="icon-only" icon={playSkipForward} />
                 </IonButton>
               </div>
@@ -356,24 +353,47 @@ const App = () => {
     </IonPage>
   );
 
-  useEffect(() => {
-    if (playlist.length === 0) {
-      setCurrentIndex(-1);
-      setIsPlaying(false);
-      setCurrentTime(0);
-      setDuration(0);
-    } else if (currentIndex >= playlist.length) {
-      setCurrentIndex(playlist.length - 1);
-    }
-  }, [playlist]);
-
   return (
     <IonApp>
       <IonReactRouter>
         <IonTabs>
           <IonRouterOutlet>
-            <Route path="/playlist" component={PlaylistPage} exact={true} />
-            <Route path="/player" component={PlayerPage} exact={true} />
+            <Route
+              path="/playlist"
+              component={() => (
+                <PlaylistPage
+                  playlist={playlist}
+                  setCurrentIndex={setCurrentIndex}
+                  setIsPlaying={setIsPlaying}
+                  currentIndex={currentIndex}
+                  removeMusic={removeMusic}
+                  savePlaylist={savePlaylist}
+                  loadPlaylist={loadPlaylist}
+                  fileInputRef={fileInputRef}
+                  handleFileSelect={handleFileSelect}
+                  playlistInputRef={playlistInputRef}
+                  handlePlaylistLoad={handlePlaylistLoad}
+                />
+              )}
+              exact={true}
+            />
+            <Route
+              path="/player"
+              component={() => (
+                <PlayerPage
+                  currentTrack={playlist[currentIndex]}
+                  isPlaying={isPlaying}
+                  currentTime={currentTime}
+                  duration={duration}
+                  formatTime={formatTime}
+                  seekTo={seekTo}
+                  previousTrack={previousTrack}
+                  togglePlayPause={togglePlayPause}
+                  nextTrack={nextTrack}
+                />
+              )}
+              exact={true}
+            />
             <Redirect exact from="/" to="/playlist" />
           </IonRouterOutlet>
           <IonTabBar slot="bottom">
@@ -388,21 +408,6 @@ const App = () => {
           </IonTabBar>
         </IonTabs>
       </IonReactRouter>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        accept=".mp3"
-        multiple
-        onChange={handleFileSelect}
-      />
-      <input
-        type="file"
-        ref={playlistInputRef}
-        style={{ display: "none" }}
-        accept=".json"
-        onChange={handlePlaylistLoad}
-      />
     </IonApp>
   );
 };
